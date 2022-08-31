@@ -35,7 +35,7 @@
  *
  * This demo application shows a OnOff switch implementation using WICED EVK.
  * The app is based on the snip/mesh/mesh_onoff_client which implements
- * BLE Mesh Generic OnOff Client model.
+ * LE Mesh Generic OnOff Client model.
  * Normally a switch has 2 buttons to turn the light (or any other device) on and off.
  * This application performs on and off functionality using a single button
  * available on the EVK.  On a first button push the On command is sent, on
@@ -47,7 +47,7 @@
  *
  * Features demonstrated
  *  - Button usage on the EVK
- *  - Controlling of a BLE light bulb using BLE Mesh On/Off messages
+ *  - Controlling of a LE light bulb using LE Mesh On/Off messages
  *
  * To demonstrate the app, work through the following steps.
  * 1. Build and download the application (to the WICED board)
@@ -84,7 +84,6 @@ extern wiced_bt_cfg_settings_t wiced_bt_cfg_settings;
  ******************************************************/
 #define MESH_PID                0x3025
 #define MESH_VID                0x0002
-#define MESH_CACHE_REPLAY_SIZE  0x0008
 
 extern wiced_platform_button_config_t platform_button[];
 /******************************************************
@@ -140,7 +139,6 @@ wiced_bt_mesh_core_config_t  mesh_config =
     .company_id         = MESH_COMPANY_ID_CYPRESS,                  // Company identifier assigned by the Bluetooth SIG
     .product_id         = MESH_PID,                                 // Vendor-assigned product identifier
     .vendor_id          = MESH_VID,                                 // Vendor-assigned product version identifier
-    .replay_cache_size  = MESH_CACHE_REPLAY_SIZE,                   // Number of replay protection entries, i.e. maximum number of mesh devices that can send application messages to this device.
 #if defined(LOW_POWER_NODE) && (LOW_POWER_NODE == 1)
     .features           = WICED_BT_MESH_CORE_FEATURE_BIT_LOW_POWER, // A bit field indicating the device features. In Low Power mode no Relay, no Proxy and no Friend
     .friend_cfg         =                                           // Empty Configuration of the Friend Feature
@@ -253,9 +251,6 @@ void mesh_app_hardware_init(void)
 #if defined(CYW20706A2)
     wiced_hal_gpio_configure_pin(WICED_GPIO_BUTTON, WICED_GPIO_BUTTON_SETTINGS(GPIO_EN_INT_BOTH_EDGE), WICED_GPIO_BUTTON_DEFAULT_STATE);
     wiced_hal_gpio_register_pin_for_interrupt(WICED_GPIO_BUTTON, button_interrupt_handler, NULL);
-#elif (defined(CYW20735B0) || defined(CYW20719B0) || defined(CYW20721B0))
-    wiced_hal_gpio_register_pin_for_interrupt(WICED_GPIO_PIN_BUTTON, button_interrupt_handler, NULL);
-    wiced_hal_gpio_configure_pin(WICED_GPIO_PIN_BUTTON, WICED_GPIO_BUTTON_SETTINGS, GPIO_PIN_OUTPUT_LOW);
 #else
     wiced_platform_register_button_callback(WICED_PLATFORM_BUTTON_1, button_interrupt_handler, NULL, GPIO_EN_INT_BOTH_EDGE);
     button_previous_value = platform_button[WICED_PLATFORM_BUTTON_1].default_state;
